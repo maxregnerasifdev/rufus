@@ -1,5 +1,7 @@
 /*
  * Rufus: The Reliable USB Formatting Utility
+ * Copyright © 2011-2024 Pete Batard <
+ * Rufus: The Reliable USB Formatting Utility
  * Copyright © 2011-2024 Pete Batard <pete@akeo.ie>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -359,6 +361,33 @@ typedef struct {
 	uint16_t build;
 	uint16_t revision;
 } winver_t;
+
+typedef struct {
+	uint16_t major;
+	uint16_t minor;
+	uint16_t build;
+	uint16_t revision;
+} slver_t;
+
+/* Windows PE version */
+typedef struct {
+	uint16_t major;
+	uint16_t minor;
+	uint16_t build;
+	uint16_t revision;
+} winpe_t;
+
+/* Windows architecture */
+#define ARCH_X86_32  0x014C
+#define ARCH_X86_64  0x8664
+#define ARCH_ARM_32  0x01C0
+#define ARCH_ARM_64  0xAA64
+#define ARCH_IA_64   0x0200
+#define ARCH_RISCV_32 0x5032
+#define ARCH_RISCV_64 0x5064
+#define ARCH_RISCV_128 0x5128
+#define ARCH_EBC     0x0EBC
+#define ARCH_MAX     0xFFFF
 
 /* We can't use the Microsoft enums as we want to have RISC-V */
 enum ArchType {
@@ -816,6 +845,36 @@ extern HANDLE CreatePreallocatedFile(const char* lpFileName, DWORD dwDesiredAcce
 	DWORD dwFlagsAndAttributes, LONGLONG fileSize);
 extern uint32_t ResolveDllAddress(dll_resolver_t* resolver);
 #define GetTextWidth(hDlg, id) GetTextSize(GetDlgItem(hDlg, id), NULL).cx
+#define GetTextHeight(hDlg, id) GetTextSize(GetDlgItem(hDlg, id), NULL).cy
+#define GetTextWidthCtrl(hCtrl) GetTextSize(hCtrl, NULL).cx
+#define GetTextHeightCtrl(hCtrl) GetTextSize(hCtrl, NULL).cy
+
+/*
+ * Function prototypes
+ */
+extern BOOL CALLBACK MainDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK LogDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK InfoDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK ProgressDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK AboutDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK UpdateDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK SearchDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK DriveDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK ImageDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK FileDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK SettingsDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK FormatDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK BadblocksDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK PartitionDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK CopyDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK PatchDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK ExtractDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK MountDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK SyslinuxDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK SyslinuxExtDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK SyslinuxExt2DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK SyslinuxExt3DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+extern BOOL CALLBACK Syslinux
 
 DWORD WINAPI HashThread(void* param);
 
@@ -900,3 +959,158 @@ out:
 #define ERROR_CANT_DOWNLOAD            0x120E
 
 #define RUFUS_ERROR(err)               (ERROR_SEVERITY_ERROR | FAC(FACILITY_STORAGE) | (err))
+
+
+/*
+ * Function prototypes
+ */
+extern BOOL InitApp(void);
+extern void CloseApp(void);
+extern void SetLanguage(void);
+extern void SetControls(void);
+extern void SetProgressState(int state);
+extern void SetBootType(int type);
+extern void SetFileSystem(int type);
+extern void SetPartitionScheme(int type);
+extern void SetTargetSystem(int type);
+extern void SetClusterSize(int type);
+extern void SetImageOption(int type);
+extern BOOL SetCapacity(uint64_t capacity);
+extern void SetLabel(const char* label);
+extern void SetNBPasses(int nb_passes);
+extern void SetLog(const char* log);
+extern void SetInfo(const char* info);
+extern void SetProgress(int progress);
+extern void SetStatus(const char* status);
+extern void SetStatusError(const char* status);
+extern void SetStatusErrorEx(const char* status, DWORD error);
+extern void SetStatusInfo(const char* status);
+extern void SetStatusInfoEx(const char* status, DWORD error);
+extern void SetStatusProgress(const char* status, int progress);
+extern void SetStatusProgressEx(const char* status, int progress, DWORD error);
+extern void SetStatusProgressInfo(const char* status, int progress);
+extern void SetStatusProgressInfoEx(const char* status, int progress, DWORD error);
+extern void SetStatusProgressInfoDuration(const char* status, int progress, DWORD error, unsigned int duration);
+extern void SetStatusProgressInfoDurationEx(const char* status, int progress, DWORD error, unsigned int duration);
+extern void SetStatusProgressDuration(const char* status, int progress, unsigned int duration);
+extern void SetStatusProgressDurationEx(const char* status, int progress, unsigned int duration);
+extern void SetStatusDuration(const char* status, unsigned int duration);
+extern void SetStatusDurationEx(const char* status, unsigned int duration);
+extern void SetStatusProgressDurationInfo(const char* status, int progress, unsigned int duration);
+extern void SetStatusProgressDurationInfoEx(const char* status, int progress, unsigned int duration);
+extern void SetStatusProgressDurationInfoError(const char* status, int progress, unsigned int duration, DWORD error);
+extern void SetStatusProgressDurationInfoErrorEx(const char* status, int progress, unsigned int duration, DWORD error);
+extern void SetStatusProgressDurationError(const char* status, int progress, unsigned int duration, DWORD error);
+extern void SetStatusProgressDurationErrorEx(const char* status, int progress, unsigned int duration, DWORD error);
+extern void SetStatusDurationInfo(const char* status, unsigned int duration);
+extern void SetStatusDurationInfoEx(const char* status, unsigned int duration);
+extern void SetStatusDurationError(const char* status, unsigned int duration, DWORD error);
+extern void SetStatusDurationErrorEx(const char* status, unsigned int duration, DWORD error);
+extern void SetStatusDurationProgress(const char* status, unsigned int duration, int progress);
+extern void SetStatusDurationProgressEx(const char* status, unsigned int duration, int progress);
+extern void SetStatusDurationProgressInfo(const char* status, unsigned int duration, int progress);
+extern void SetStatusDurationProgressInfoEx(const char* status, unsigned int duration, int progress);
+extern void SetStatusDurationProgressError(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressErrorEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationInfoProgress(const char* status, unsigned int duration, int progress);
+extern void SetStatusDurationInfoProgressEx(const char* status, unsigned int duration, int progress);
+extern void SetStatusDurationInfoProgressError(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationInfoProgressErrorEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationErrorProgress(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgressEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgressInfo(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgressInfoEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorInfo(const char* status, unsigned int duration, DWORD error);
+extern void SetStatusDurationErrorInfoEx(const char* status, unsigned int duration, DWORD error);
+extern void SetStatusDurationErrorInfoProgress(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorInfoProgressEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgressInfo(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgressInfoEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationInfoError(const char* status, unsigned int duration, DWORD error);
+extern void SetStatusDurationInfoErrorEx(const char* status, unsigned int duration, DWORD error);
+extern void SetStatusDurationInfoErrorProgress(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationInfoErrorProgressEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationInfoProgressError(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationInfoProgressErrorEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressErrorInfo(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressErrorInfoEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressInfoError(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressInfoErrorEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressInfo(const char* status, unsigned int duration, int progress);
+extern void SetStatusDurationProgressInfoEx(const char* status, unsigned int duration, int progress);
+extern void SetStatusDurationProgressError(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressErrorEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationErrorProgressInfo(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgressInfoEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgress(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgressEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorInfoProgress(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorInfoProgressEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationInfoProgressError(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationInfoProgressErrorEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationInfoErrorProgress(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationInfoErrorProgressEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationProgressErrorInfo(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressErrorInfoEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressInfoError(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressInfoErrorEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressInfo(const char* status, unsigned int duration, int progress);
+extern void SetStatusDurationProgressInfoEx(const char* status, unsigned int duration, int progress);
+extern void SetStatusDurationProgressError(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressErrorEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationErrorProgressInfo(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgressInfoEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgress(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgressEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorInfo(const char* status, unsigned int duration, DWORD error);
+extern void SetStatusDurationErrorInfoEx(const char* status, unsigned int duration, DWORD error);
+extern void SetStatusDurationErrorInfoProgress(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorInfoProgressEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgressInfo(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgressInfoEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationInfoError(const char* status, unsigned int duration, DWORD error);
+extern void SetStatusDurationInfoErrorEx(const char* status, unsigned int duration, DWORD error);
+extern void SetStatusDurationInfoErrorProgress(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationInfoErrorProgressEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationInfoProgressError(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationInfoProgressErrorEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationInfoProgressError(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationInfoProgressErrorEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationInfoProgressError(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationInfoProgressErrorEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationInfoProgressError(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationInfoProgressErrorEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressErrorInfo(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressErrorInfoEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressInfoError(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressInfoErrorEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressInfo(const char* status, unsigned int duration, int progress);
+extern void SetStatusDurationProgressInfoEx(const char* status, unsigned int duration, int progress);
+extern void SetStatusDurationProgressError(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressErrorEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationErrorProgressInfo(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgressInfoEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgress(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgressEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorInfoProgress(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorInfoProgressEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationInfoProgressError(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationInfoProgressErrorEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationInfoErrorProgress(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationInfoErrorProgressEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationProgressErrorInfo(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressErrorInfoEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressInfoError(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressInfoErrorEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressInfo(const char* status, unsigned int duration, int progress);
+extern void SetStatusDurationProgressInfoEx(const char* status, unsigned int duration, int progress);
+extern void SetStatusDurationProgressError(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationProgressErrorEx(const char* status, unsigned int duration, int progress, DWORD error);
+extern void SetStatusDurationErrorProgressInfo(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgressInfoEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgress(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorProgressEx(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorInfo(const char* status, unsigned int duration, DWORD error);
+extern void SetStatusDurationErrorInfoEx(const char* status, unsigned int duration, DWORD error);
+extern void SetStatusDurationErrorInfoProgress(const char* status, unsigned int duration, DWORD error, int progress);
+extern void SetStatusDurationErrorInfoProgressEx(const char* status, unsigned int duration, DWORD error, int progress);
